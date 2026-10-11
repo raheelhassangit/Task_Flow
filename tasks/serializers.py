@@ -20,8 +20,9 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Title must be at least 3 characters.")
         return value
 
-    # Field-level: runs only if due_date is sent
     def validate_due_date(self, value):
+        if self.instance and self.instance.due_date == value:
+            return value
         if value and value < timezone.localdate():
             raise serializers.ValidationError("Due date cannot be in the past.")
         return value
