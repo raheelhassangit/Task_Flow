@@ -36,3 +36,8 @@ class TaskSerializer(serializers.ModelSerializer):
                 {"due_date": "High-priority tasks need a due date."}
             )
         return attrs
+    
+class TaskListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ["id", "project", "title", "status", "priority", "due_date"]    
