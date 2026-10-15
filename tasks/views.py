@@ -3,12 +3,25 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskListSerializer, TaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    def get_queryset(self):
+        queryset = Task.objects.all()
+        project_id = self.request.query_params.get("project")
+        if project_id and project_id.isdigit():
+            queryset = queryset.filter(project_id=project_id)
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return TaskListSerializer
+        return TaskSerializer
+
+    def perform_create(self, serializer):
+        task = serializer.save()
+        print(f"[temp] task {task.pk} created in project {task.project_id}")
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
