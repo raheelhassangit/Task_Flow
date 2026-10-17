@@ -8,7 +8,7 @@ from .serializers import TaskListSerializer, TaskSerializer
 
 class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
-        queryset = Task.objects.all()
+        queryset = Task.objects.filter(project__memberships__user=self.request.user)
         project_id = self.request.query_params.get("project")
         if project_id and project_id.isdigit():
             queryset = queryset.filter(project_id=project_id)
@@ -20,8 +20,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return TaskSerializer
 
     def perform_create(self, serializer):
-        task = serializer.save()
-        print(f"[temp] task {task.pk} created in project {task.project_id}")
+        serializer.save(created_by=self.request.user)
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):

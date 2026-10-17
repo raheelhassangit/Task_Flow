@@ -2,17 +2,30 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+from django.db import transaction
 
 from tasks.serializers import TaskSerializer
 
 from .models import Project
+from .models import Project, ProjectMember
 from .serializers import ProjectSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    
+
+    def get_queryset(self):
+        return Project.objects.filter(memberships__user=self.request.user)
+
+    def perform_create(self, serializer):
+        with transaction.atomic():
+            project = serializer.save()
+            ProjectMember.objects.create(
+                project=project,
+                user=self.request.user,
+                role=ProjectMember.Role.OWNER,
+            )
+
     def get_permissions(self):
         if self.action == "destroy":
             return [IsAdminUser()]
