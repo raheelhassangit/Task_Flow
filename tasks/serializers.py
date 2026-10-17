@@ -9,9 +9,15 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id", "project", "title", "description", "status",
-            "priority", "due_date", "created_at", "updated_at",
+            "priority", "due_date", "created_by", "created_at", "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = ["id", "created_by", "created_at", "updated_at"]
+
+    def validate_project(self, project):
+        user = self.context["request"].user
+        if not project.memberships.filter(user=user).exists():
+            raise serializers.ValidationError("You are not a member of this project.")
+        return project
 
     # Field-level: runs only for the "title" field
     def validate_title(self, value):
