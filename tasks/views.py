@@ -8,7 +8,7 @@ from .serializers import TaskListSerializer, TaskSerializer
 
 class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
-        queryset = Task.objects.all()
+        queryset = Task.objects.filter(project__memberships__user=self.request.user)
         project_id = self.request.query_params.get("project")
         if project_id and project_id.isdigit():
             queryset = queryset.filter(project_id=project_id)
