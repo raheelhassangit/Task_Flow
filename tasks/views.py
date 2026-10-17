@@ -20,8 +20,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return TaskSerializer
 
     def perform_create(self, serializer):
-        task = serializer.save()
-        print(f"[temp] task {task.pk} created in project {task.project_id}")
+        serializer.save(created_by=self.request.user)
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
