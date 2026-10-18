@@ -30,3 +30,8 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.status = Task.Status.DONE
         task.save()
         return Response(self.get_serializer(task).data)
+    
+    def get_permissions(self):
+        if self.action == "destroy":
+            return [IsAuthenticated(), IsTaskCreatorOrProjectAdmin()]
+        return [IsAuthenticated()]
