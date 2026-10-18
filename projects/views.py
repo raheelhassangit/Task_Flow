@@ -1,11 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
 from django.db import transaction
 
 from tasks.serializers import TaskSerializer
-
 from .models import Project
 from .models import Project, ProjectMember
 from .serializers import ProjectSerializer
@@ -28,10 +26,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 role=ProjectMember.Role.OWNER,
             )
 
-    def get_permissions(self):
-        if self.action == "destroy":
-            return [IsAdminUser()]
-        return super().get_permissions()
+        def get_permissions(self):
+            if self.action in ("update", "partial_update"):
+                return [IsAuthenticated(), IsProjectAdmin()]
+            if self.action == "destroy":
+                return [IsAuthenticated(), IsProjectOwner()]
+            return [IsAuthenticated()]
 
     @action(detail=True, methods=["get"])
     def tasks(self, request, pk=None):
