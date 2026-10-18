@@ -4,6 +4,8 @@ from rest_framework.response import Response
 
 from .models import Task
 from .serializers import TaskListSerializer, TaskSerializer
+from rest_framework.permissions import IsAuthenticated
+from projects.permissions import IsTaskCreatorOrProjectAdmin
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -28,3 +30,8 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.status = Task.Status.DONE
         task.save()
         return Response(self.get_serializer(task).data)
+    
+    def get_permissions(self):
+        if self.action == "destroy":
+            return [IsAuthenticated(), IsTaskCreatorOrProjectAdmin()]
+        return [IsAuthenticated()]
