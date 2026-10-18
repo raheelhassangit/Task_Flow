@@ -4,6 +4,8 @@ from rest_framework.response import Response
 
 from .models import Task
 from .serializers import TaskListSerializer, TaskSerializer
+from rest_framework.permissions import IsAuthenticated
+from projects.permissions import IsTaskCreatorOrProjectAdmin
 
 
 class TaskViewSet(viewsets.ModelViewSet):
