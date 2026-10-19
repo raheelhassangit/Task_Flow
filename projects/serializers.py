@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import Project
-
+from .models import Project, ProjectMember
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,8 +9,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "description", "created_at", "updated_at"]
         read_only_fields = ["id", "created_at", "updated_at"]
         
-from .models import Project, ProjectMember
-
 
 class MemberSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email", read_only=True)
