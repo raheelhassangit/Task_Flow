@@ -27,3 +27,7 @@ class AddMemberSerializer(serializers.Serializer):
         default=ProjectMember.Role.MEMBER,
     )
         
+class RoleSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(
+        choices=[ProjectMember.Role.ADMIN, ProjectMember.Role.MEMBER]
+    )        
