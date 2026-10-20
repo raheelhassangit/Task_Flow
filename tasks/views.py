@@ -55,3 +55,24 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(task=task, author=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class CommentViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = CommentSerializer
+    http_method_names = ["get", "patch", "delete", "head", "options"]
+
+    def get_queryset(self):
+        return Comment.objects.filter(
+            task__project__memberships__user=self.request.user
+        ).select_related("author")
+
+    def get_permissions(self):
+        if self.action in ("update", "partial_update"):
+            return [IsAuthenticated(), IsCommentAuthor()]
+        if self.action == "destroy":
+            return [IsAuthenticated(), IsCommentAuthorOrProjectAdmin()]
+        return [IsAuthenticated()]    
