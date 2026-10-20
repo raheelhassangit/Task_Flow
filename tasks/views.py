@@ -1,11 +1,16 @@
-from rest_framework import viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Task
-from .serializers import TaskListSerializer, TaskSerializer
-from rest_framework.permissions import IsAuthenticated
-from projects.permissions import IsTaskCreatorOrProjectAdmin
+from projects.permissions import (
+    IsCommentAuthor,
+    IsCommentAuthorOrProjectAdmin,
+    IsTaskCreatorOrProjectAdmin,
+)
+
+from .models import Comment, Task
+from .serializers import CommentSerializer, TaskListSerializer, TaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
