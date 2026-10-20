@@ -42,3 +42,16 @@ class TaskViewSet(viewsets.ModelViewSet):
         if self.action == "destroy":
             return [IsAuthenticated(), IsTaskCreatorOrProjectAdmin()]
         return [IsAuthenticated()]
+    
+    @action(detail=True, methods=["get", "post"], url_path="comments")
+    def comments(self, request, pk=None):
+        task = self.get_object()
+
+        if request.method == "GET":
+            comments = task.comments.select_related("author")
+            return Response(CommentSerializer(comments, many=True).data)
+
+        serializer = CommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(task=task, author=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
