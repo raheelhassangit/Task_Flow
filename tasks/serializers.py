@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Task
+from .models import Task, Comment
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -47,3 +47,11 @@ class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ["id", "project", "title", "status", "priority", "due_date"]    
+        
+class CommentSerializer(serializers.ModelSerializer):
+    author_email = serializers.EmailField(source="author.email", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ["id", "task", "author", "author_email", "body", "created_at", "updated_at"]
+        read_only_fields = ["id", "task", "author", "created_at", "updated_at"]        

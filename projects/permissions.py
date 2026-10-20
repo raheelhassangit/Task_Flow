@@ -40,3 +40,19 @@ class IsTaskCreatorOrProjectAdmin(BasePermission):
             return True
         role = get_role(request.user, obj.project)
         return role in (ProjectMember.Role.OWNER, ProjectMember.Role.ADMIN)
+    
+class IsCommentAuthor(BasePermission):
+    message = "You can only edit your own comments."
+
+    def has_object_permission(self, request, view, obj):
+        return obj.author_id == request.user.id
+
+
+class IsCommentAuthorOrProjectAdmin(BasePermission):
+    message = "Only the author, project admins or the owner can delete this comment."
+
+    def has_object_permission(self, request, view, obj):
+        if obj.author_id == request.user.id:
+            return True
+        role = get_role(request.user, obj.task.project)
+        return role in (ProjectMember.Role.OWNER, ProjectMember.Role.ADMIN)    
