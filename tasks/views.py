@@ -24,6 +24,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return TaskListSerializer
+        if self.action == "comments":
+            return CommentSerializer
         return TaskSerializer
 
     def perform_create(self, serializer):
