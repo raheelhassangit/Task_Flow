@@ -11,15 +11,16 @@ from projects.permissions import (
 
 from .models import Comment, Task
 from .serializers import CommentSerializer, TaskListSerializer, TaskSerializer
-
+from .filters import TaskFilter
 
 class TaskViewSet(viewsets.ModelViewSet):
+    filterset_class = TaskFilter
+    search_fields = ["title", "description"]
+    ordering_fields = ["due_date", "created_at", "title"]
+    ordering = ["-created_at"]
+
     def get_queryset(self):
-        queryset = Task.objects.filter(project__memberships__user=self.request.user)
-        project_id = self.request.query_params.get("project")
-        if project_id and project_id.isdigit():
-            queryset = queryset.filter(project_id=project_id)
-        return queryset
+        return Task.objects.filter(project__memberships__user=self.request.user)
 
     def get_serializer_class(self):
         if self.action == "list":
