@@ -9,15 +9,25 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id", "project", "title", "description", "status",
-            "priority", "due_date", "created_by", "created_at", "updated_at",
+            "priority", "due_date", "created_by", "assigned_to",  "created_at", "updated_at",
         ]
         read_only_fields = ["id", "created_by", "created_at", "updated_at"]
 
-    def validate_project(self, project):
-        user = self.context["request"].user
-        if not project.memberships.filter(user=user).exists():
-            raise serializers.ValidationError("You are not a member of this project.")
-        return project
+        def validate(self, attrs):
+            priority = attrs.get("priority", getattr(self.instance, "priority", None))
+            due_date = attrs.get("due_date", getattr(self.instance, "due_date", None))
+            if priority == Task.Priority.HIGH and due_date is None:
+                raise serializers.ValidationError(
+                    {"due_date": "High-priority tasks need a due date."}
+                )
+
+            project = attrs.get("project", getattr(self.instance, "project", None))
+            assignee = attrs.get("assigned_to", getattr(self.instance, "assigned_to", None))
+            if assignee and project and not project.memberships.filter(user=assignee).exists():
+                raise serializers.ValidationError(
+                    {"assigned_to": "The assignee must be a member of the project."}
+                )
+            return attrs
 
     # Field-level: runs only for the "title" field
     def validate_title(self, value):
@@ -46,7 +56,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ["id", "project", "title", "status", "priority", "due_date"]    
+        fields = ["id", "project", "title", "status", "priority", "assigned_to", "due_date"]    
         
 class CommentSerializer(serializers.ModelSerializer):
     author_email = serializers.EmailField(source="author.email", read_only=True)
