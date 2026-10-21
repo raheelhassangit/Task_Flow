@@ -6,7 +6,6 @@ app_name = "tasks"
 
 router = DefaultRouter()
 router.register("tasks", TaskViewSet, basename="task")
-router.register("tasks", TaskViewSet, basename="task")
 router.register("comments", CommentViewSet, basename="comment")
 
 urlpatterns = router.urls
