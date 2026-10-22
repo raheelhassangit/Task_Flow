@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User
 from .serializers import (
@@ -112,3 +113,7 @@ class PasswordResetConfirmView(APIView):
         user.save()
         revoke_all_refresh_tokens(user)
         return Response({"detail": "Password has been reset. You can now log in."})
+
+
+class LoginView(TokenObtainPairView):
+    throttle_scope = "login"    
