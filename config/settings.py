@@ -148,12 +148,12 @@ REST_FRAMEWORK = {
     },
 }
 
-CACHES = {
-      "default": {
-          "BACKEND": "django.core.cache.backends.redis.RedisCache",
-          "LOCATION": "redis://127.0.0.1:6379/1",
-      }
-}
+# CACHES = {
+#       "default": {
+#           "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#           "LOCATION": "redis://127.0.0.1:6379/1",
+#       }
+# }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
