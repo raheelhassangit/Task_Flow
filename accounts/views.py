@@ -27,6 +27,7 @@ from .tokens import revoke_all_refresh_tokens
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    throttle_scope = "register"
 
 
 class LogoutView(APIView):
@@ -57,6 +58,7 @@ class MeView(generics.RetrieveUpdateAPIView):
 
 
 class ChangePasswordView(APIView):
+    throttle_scope = "change_password"
     def post(self, request):
         serializer = ChangePasswordSerializer(
             data=request.data, context={"request": request}
@@ -72,7 +74,8 @@ class ChangePasswordView(APIView):
 
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
-
+    throttle_scope = "password_reset"
+    
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -95,6 +98,7 @@ class PasswordResetRequestView(APIView):
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "password_reset_confirm"
 
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
