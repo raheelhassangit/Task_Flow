@@ -26,6 +26,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Project.objects.filter(memberships__user=self.request.user)
+    
+    def get_throttles(self):
+        if self.action == "members" and self.request.method == "POST":
+            self.throttle_scope = "member_invite"
+        return super().get_throttles()
 
     def perform_create(self, serializer):
         with transaction.atomic():

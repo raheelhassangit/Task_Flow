@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User
 from .serializers import (
@@ -26,6 +27,7 @@ from .tokens import revoke_all_refresh_tokens
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    throttle_scope = "register"
 
 
 class LogoutView(APIView):
@@ -56,6 +58,7 @@ class MeView(generics.RetrieveUpdateAPIView):
 
 
 class ChangePasswordView(APIView):
+    throttle_scope = "change_password"
     def post(self, request):
         serializer = ChangePasswordSerializer(
             data=request.data, context={"request": request}
@@ -71,7 +74,8 @@ class ChangePasswordView(APIView):
 
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
-
+    throttle_scope = "password_reset"
+    
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -94,6 +98,7 @@ class PasswordResetRequestView(APIView):
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "password_reset_confirm"
 
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
@@ -112,3 +117,7 @@ class PasswordResetConfirmView(APIView):
         user.save()
         revoke_all_refresh_tokens(user)
         return Response({"detail": "Password has been reset. You can now log in."})
+
+
+class LoginView(TokenObtainPairView):
+    throttle_scope = "login"    
