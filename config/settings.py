@@ -130,7 +130,22 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
-    ]
+    ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/min",
+        "user": "300/min",
+        "login": "5/min",
+        "register": "10/hour",
+        "password_reset": "5/hour",
+        "password_reset_confirm": "10/hour",
+        "change_password": "5/hour",
+        "member_invite": "20/hour",
+    },
 }
 
 SIMPLE_JWT = {
