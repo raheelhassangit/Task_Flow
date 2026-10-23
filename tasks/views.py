@@ -45,6 +45,16 @@ class TaskViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         read = TaskReadSerializer(serializer.instance, context=self.get_serializer_context())
         return Response(read.data, status=status.HTTP_201_CREATED)    
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        serializer = self.get_serializer(
+            self.get_object(), data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        read = TaskReadSerializer(serializer.instance, context=self.get_serializer_context())
+        return Response(read.data)
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
