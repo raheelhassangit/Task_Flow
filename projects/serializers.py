@@ -29,3 +29,8 @@ class RoleSerializer(serializers.Serializer):
     role = serializers.ChoiceField(
         choices=[ProjectMember.Role.ADMIN, ProjectMember.Role.MEMBER]
     )        
+    
+class ProjectSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ["id", "name"]    
