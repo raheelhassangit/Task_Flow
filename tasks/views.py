@@ -10,7 +10,12 @@ from projects.permissions import (
 )
 
 from .models import Comment, Task
-from .serializers import CommentSerializer, TaskListSerializer, TaskSerializer
+from .serializers import (
+    CommentSerializer,
+    TaskListSerializer,
+    TaskReadSerializer,
+    TaskWriteSerializer,
+)
 from .filters import TaskFilter
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -25,12 +30,31 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return TaskListSerializer
+        if self.action in ("create", "update", "partial_update"):
+            return TaskWriteSerializer
         if self.action == "comments":
             return CommentSerializer
-        return TaskSerializer
+        return TaskReadSerializer  # retrieve, complete
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        read = TaskReadSerializer(serializer.instance, context=self.get_serializer_context())
+        return Response(read.data, status=status.HTTP_201_CREATED)    
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        serializer = self.get_serializer(
+            self.get_object(), data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        read = TaskReadSerializer(serializer.instance, context=self.get_serializer_context())
+        return Response(read.data)
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
