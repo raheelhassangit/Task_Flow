@@ -10,7 +10,12 @@ from projects.permissions import (
 )
 
 from .models import Comment, Task
-from .serializers import CommentSerializer, TaskListSerializer, TaskSerializer
+from .serializers import (
+    CommentSerializer,
+    TaskListSerializer,
+    TaskReadSerializer,
+    TaskWriteSerializer,
+)
 from .filters import TaskFilter
 
 class TaskViewSet(viewsets.ModelViewSet):
