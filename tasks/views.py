@@ -30,9 +30,11 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return TaskListSerializer
+        if self.action in ("create", "update", "partial_update"):
+            return TaskWriteSerializer
         if self.action == "comments":
             return CommentSerializer
-        return TaskSerializer
+        return TaskReadSerializer  # retrieve, complete
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
