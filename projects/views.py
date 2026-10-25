@@ -54,7 +54,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def tasks(self, request, pk=None):
         project = self.get_object()
-        page = self.paginate_queryset(project.tasks.all())
+        tasks = project.tasks.select_related("project", "assigned_to")
+        page = self.paginate_queryset(tasks)
         serializer = TaskListSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
 
