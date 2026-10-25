@@ -25,7 +25,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return Task.objects.filter(project__memberships__user=self.request.user)
+        return Task.objects.filter(
+            project__memberships__user=self.request.user
+        ).select_related("project", "assigned_to", "created_by")
 
     def get_serializer_class(self):
         if self.action == "list":
