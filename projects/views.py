@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.models import User
-from tasks.serializers import TaskSerializer
+from tasks.serializers import TaskListSerializer, TaskWriteSerializer
 
 from .models import Project, ProjectMember
 from .permissions import IsProjectAdmin, IsProjectOwner, get_role
