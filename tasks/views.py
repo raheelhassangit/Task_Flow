@@ -105,6 +105,15 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.save(task=task, author=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    @action(detail=False, methods=["get"])
+    def my(self, request):
+        queryset = self.filter_queryset(
+            self.get_queryset().filter(assigned_to=request.user)
+        )
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+    
 class CommentViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
