@@ -134,3 +134,49 @@ class CommentViewSet(
         if self.action == "destroy":
             return [IsAuthenticated(), IsCommentAuthorOrProjectAdmin()]
         return [IsAuthenticated()]    
+    
+class DashboardView(APIView):
+    def get(self, request):
+        user = request.user
+        today = timezone.localdate()
+        visible = Task.objects.filter(project__memberships__user=user)
+
+        mine = visible.filter(assigned_to=user, status__in=OPEN_STATUSES).aggregate(
+            open=Count("id"),
+            overdue=Count("id", filter=Q(due_date__lt=today)),
+            due_this_week=Count(
+                "id",
+                filter=Q(due_date__gte=today, due_date__lte=today + timedelta(days=7)),
+            ),
+        )
+
+        projects = (
+            Project.objects.filter(memberships__user=user)
+            .annotate(
+                total=Count("tasks"),
+                done=Count("tasks", filter=Q(tasks__status=Task.Status.DONE)),
+                overdue=Count(
+                    "tasks",
+                    filter=Q(tasks__due_date__lt=today, tasks__status__in=OPEN_STATUSES),
+                ),
+            )
+            .order_by("name")
+        )
+
+        return Response(
+            {
+                "overall": task_stats(visible, today),
+                "mine": mine,
+                "projects": [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "total": p.total,
+                        "done": p.done,
+                        "overdue": p.overdue,
+                        "completion_rate": round(p.done * 100 / p.total, 1) if p.total else 0.0,
+                    }
+                    for p in projects
+                ],
+            }
+        )    
