@@ -127,3 +127,30 @@ class ProjectViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You can't remove this member.")
         membership.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=True, methods=["get"])
+    def summary(self, request, pk=None):
+        project = self.get_object()
+        today = timezone.localdate()
+
+        by_assignee = (
+            project.tasks.filter(assigned_to__isnull=False)
+            .values(user_id=F("assigned_to"), email=F("assigned_to__email"))
+            .annotate(
+                open=Count("id", filter=Q(status__in=OPEN_STATUSES)),
+                done=Count("id", filter=Q(status=Task.Status.DONE)),
+            )
+            .order_by("email")
+        )
+
+        return Response(
+            {
+                "project": {"id": project.id, "name": project.name},
+                "members": project.memberships.count(),
+                "tasks": task_stats(project.tasks.all(), today),
+                "unassigned_open": project.tasks.filter(
+                    assigned_to__isnull=True, status__in=OPEN_STATUSES
+                ).count(),
+                "by_assignee": list(by_assignee),
+            }
+        )
