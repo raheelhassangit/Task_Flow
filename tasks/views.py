@@ -50,7 +50,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         )
 
     def get_serializer_class(self):
-        if self.action == "list":
+        if self.action in ("list", "my"):
             return TaskListSerializer
         if self.action in ("create", "update", "partial_update"):
             return TaskWriteSerializer
@@ -65,8 +65,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        read = TaskReadSerializer(serializer.instance, context=self.get_serializer_context())
-        return Response(read.data, status=status.HTTP_201_CREATED)    
+        instance = self.get_queryset().get(pk=serializer.instance.pk)
+        read = TaskReadSerializer(instance, context=self.get_serializer_context())
+        return Response(read.data, status=status.HTTP_201_CREATED)
     
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
@@ -75,7 +76,8 @@ class TaskViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        read = TaskReadSerializer(serializer.instance, context=self.get_serializer_context())
+        instance = self.get_queryset().get(pk=serializer.instance.pk)
+        read = TaskReadSerializer(instance, context=self.get_serializer_context())
         return Response(read.data)
 
     @action(detail=True, methods=["post"])
