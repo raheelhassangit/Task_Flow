@@ -64,6 +64,7 @@ class TaskReadSerializer(serializers.ModelSerializer):
     project = ProjectSummarySerializer(read_only=True)
     created_by = UserSummarySerializer(read_only=True)
     assigned_to = UserSummarySerializer(read_only=True)
+    comment_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Task
@@ -76,6 +77,7 @@ class TaskReadSerializer(serializers.ModelSerializer):
 class TaskListSerializer(serializers.ModelSerializer):
     project = ProjectSummarySerializer(read_only=True)
     assigned_to = UserSummarySerializer(read_only=True)
+    comment_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Task
