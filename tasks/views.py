@@ -18,16 +18,36 @@ from .serializers import (
 )
 from .filters import TaskFilter
 
+from datetime import timedelta
+
+from django.db.models import Case, Count, IntegerField, Q, Value, When
+from django.utils import timezone
+from rest_framework.views import APIView
+
+from projects.models import Project
+
+from .stats import OPEN_STATUSES, task_stats
+
 class TaskViewSet(viewsets.ModelViewSet):
     filterset_class = TaskFilter
     search_fields = ["title", "description"]
-    ordering_fields = ["due_date", "created_at", "title"]
+    ordering_fields = ["due_date", "created_at", "title", "priority_rank"]
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        return Task.objects.filter(
-            project__memberships__user=self.request.user
-        ).select_related("project", "assigned_to", "created_by")
+        return (
+            Task.objects.filter(project__memberships__user=self.request.user)
+            .select_related("project", "assigned_to", "created_by")
+            .annotate(
+                comment_count=Count("comments", distinct=True),
+                priority_rank=Case(
+                    When(priority=Task.Priority.HIGH, then=Value(3)),
+                    When(priority=Task.Priority.MEDIUM, then=Value(2)),
+                    default=Value(1),
+                    output_field=IntegerField(),
+                ),
+            )
+        )
 
     def get_serializer_class(self):
         if self.action == "list":
