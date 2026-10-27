@@ -64,6 +64,12 @@ class TaskViewSet(viewsets.ModelViewSet):
         if task.assigned_to_id:
             notify_task_assigned(task, self.request.user)
         
+    def perform_update(self, serializer):
+        old_assignee_id = serializer.instance.assigned_to_id   # read BEFORE saving
+        task = serializer.save()
+        if task.assigned_to_id and task.assigned_to_id != old_assignee_id:
+            notify_task_assigned(task, self.request.user)
+        
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
