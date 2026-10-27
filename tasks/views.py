@@ -112,6 +112,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(task=task, author=request.user)
+        notify_task_commented(serializer.instance, request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=["get"])
