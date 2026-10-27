@@ -27,6 +27,7 @@ from rest_framework.views import APIView
 from projects.models import Project
 
 from .stats import OPEN_STATUSES, task_stats
+from notifications.services import notify_task_assigned, notify_task_commented
 
 class TaskViewSet(viewsets.ModelViewSet):
     filterset_class = TaskFilter
