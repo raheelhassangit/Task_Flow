@@ -27,6 +27,7 @@ from rest_framework.views import APIView
 from projects.models import Project
 
 from .stats import OPEN_STATUSES, task_stats
+from notifications.services import notify_task_assigned, notify_task_commented
 
 class TaskViewSet(viewsets.ModelViewSet):
     filterset_class = TaskFilter
@@ -59,7 +60,15 @@ class TaskViewSet(viewsets.ModelViewSet):
         return TaskReadSerializer  # retrieve, complete
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        task = serializer.save(created_by=self.request.user)
+        if task.assigned_to_id:
+            notify_task_assigned(task, self.request.user)
+        
+    def perform_update(self, serializer):
+        old_assignee_id = serializer.instance.assigned_to_id   # read BEFORE saving
+        task = serializer.save()
+        if task.assigned_to_id and task.assigned_to_id != old_assignee_id:
+            notify_task_assigned(task, self.request.user)
         
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -103,6 +112,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(task=task, author=request.user)
+        notify_task_commented(serializer.instance, request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=["get"])
