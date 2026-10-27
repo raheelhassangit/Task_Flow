@@ -60,7 +60,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         return TaskReadSerializer  # retrieve, complete
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        task = serializer.save(created_by=self.request.user)
+        if task.assigned_to_id:
+            notify_task_assigned(task, self.request.user)
         
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
