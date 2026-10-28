@@ -20,6 +20,13 @@ from .filters import TaskFilter
 
 from datetime import timedelta
 
+from django.db import transaction
+
+from notifications.tasks import (
+    create_assignment_notification,
+    create_comment_notifications,
+)
+
 from django.db.models import Case, Count, IntegerField, Q, Value, When
 from django.utils import timezone
 from rest_framework.views import APIView
@@ -62,13 +69,19 @@ class TaskViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         task = serializer.save(created_by=self.request.user)
         if task.assigned_to_id:
-            notify_task_assigned(task, self.request.user)
+            actor_id = self.request.user.id
+            transaction.on_commit(
+                lambda: create_assignment_notification.delay(task.id, actor_id)
+            )
         
     def perform_update(self, serializer):
-        old_assignee_id = serializer.instance.assigned_to_id   # read BEFORE saving
+        old_assignee_id = serializer.instance.assigned_to_id
         task = serializer.save()
         if task.assigned_to_id and task.assigned_to_id != old_assignee_id:
-            notify_task_assigned(task, self.request.user)
+            actor_id = self.request.user.id
+            transaction.on_commit(
+                lambda: create_assignment_notification.delay(task.id, actor_id)
+            )
         
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
