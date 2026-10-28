@@ -191,3 +191,24 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "TaskFlow <noreply@taskflow.local>"
 FRONTEND_URL = "http://localhost:3000"
 PASSWORD_RESET_TIMEOUT = 60 * 60 
+
+from celery.schedules import crontab
+
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TIME_LIMIT = 60
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_BEAT_SCHEDULE = {
+    "cleanup-old-notifications": {
+        "task": "notifications.tasks.cleanup_old_notifications",
+        "schedule": crontab(hour=3, minute=0),
+    },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+    }
+}
