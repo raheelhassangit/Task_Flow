@@ -10,8 +10,7 @@ def _name(user):
 def notify_task_assigned(task, actor):
     assignee = task.assigned_to
     if assignee is None or assignee.id == actor.id:   # never notify people about their own actions
-        return
-    Notification.objects.create(
+        return Notification.objects.create(
         recipient=assignee,
         actor=actor,
         kind=Kind.TASK_ASSIGNED,
