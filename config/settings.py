@@ -151,12 +151,6 @@ REST_FRAMEWORK = {
     "NUM_PROXIES": config("NUM_PROXIES", default=0, cast=int),
 }
 
-# CACHES = {
-#       "default": {
-#           "BACKEND": "django.core.cache.backends.redis.RedisCache",
-#           "LOCATION": "redis://127.0.0.1:6379/1",
-#       }
-# }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -182,6 +176,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
