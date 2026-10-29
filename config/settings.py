@@ -184,14 +184,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "TaskFlow <noreply@taskflow.local>"
-FRONTEND_URL = "http://localhost:3000"
-PASSWORD_RESET_TIMEOUT = 60 * 60 
+REDIS_URL = config("REDIS_URL", default="redis://127.0.0.1:6378")
 
-from celery.schedules import crontab
-
-CELERY_BROKER_URL = "redis://127.0.0.1:6378/0"
+CELERY_BROKER_URL = f"{REDIS_URL}/0"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TIME_LIMIT = 60
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
@@ -206,6 +201,28 @@ CELERY_BEAT_SCHEDULE = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6378/1",
+        "LOCATION": f"{REDIS_URL}/1",
     }
 }
+
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="TaskFlow <noreply@taskflow.local>")
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:3000")
+PASSWORD_RESET_TIMEOUT = 60 * 60
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = config("EMAIL_HOST")
+    EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+    EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = True
+
+    # HTTPS hardening (only when DEBUG is off)
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=3600, cast=int)
+    CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
