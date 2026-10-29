@@ -141,13 +141,14 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "anon": "60/min",
         "user": "300/min",
-        "login": "3/min",
+        "login": "5/min",
         "register": "10/hour",
-        "password_reset": "3/min",
+        "password_reset": "5/hour",
         "password_reset_confirm": "10/hour",
         "change_password": "5/hour",
-        "member_invite": "3/min",
+        "member_invite": "20/hour",
     },
+    "NUM_PROXIES": config("NUM_PROXIES", default=0, cast=int),
 }
 
 # CACHES = {
