@@ -70,7 +70,8 @@ class TaskReadSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id", "project", "title", "description", "status", "priority",
-            "due_date", "created_by", "assigned_to", "created_at", "updated_at",
+            "due_date", "created_by", "assigned_to", "comment_count",
+            "created_at", "updated_at",
         ]
 
 
@@ -89,5 +90,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ["id", "task", "author", "body", "created_at", "updated_at"]
+        fields = [
+            "id", "project", "title", "status", "priority", "due_date",
+            "assigned_to", "comment_count",
+        ]
         read_only_fields = ["id", "task", "created_at", "updated_at"]
