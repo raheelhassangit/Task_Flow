@@ -2,6 +2,8 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 
 from projects.permissions import (
     IsCommentAuthor,
@@ -162,6 +164,7 @@ class CommentViewSet(
         return [IsAuthenticated()]    
     
 class DashboardView(APIView):
+    @extend_schema(responses=OpenApiTypes.OBJECT)
     def get(self, request):
         user = request.user
         today = timezone.localdate()
