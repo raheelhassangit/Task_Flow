@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     "rest_framework",
+    "corsheaders",
+    "drf_spectacular",
     "tasks",
     "projects",
     "accounts",
@@ -56,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -149,8 +152,16 @@ REST_FRAMEWORK = {
         "member_invite": "20/hour",
     },
     "NUM_PROXIES": config("NUM_PROXIES", default=0, cast=int),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "TaskFlow API",
+    "DESCRIPTION": "Projects, tasks, comments, notifications and dashboard.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -208,6 +219,9 @@ CACHES = {
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="TaskFlow <noreply@taskflow.local>")
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:3000")
 PASSWORD_RESET_TIMEOUT = 60 * 60
+
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="", cast=Csv())
+CORS_EXPOSE_HEADERS = ["Retry-After"]
 
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
