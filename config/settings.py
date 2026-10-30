@@ -211,6 +211,9 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="TaskFlow <noreply@tas
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:3000")
 PASSWORD_RESET_TIMEOUT = 60 * 60
 
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="", cast=Csv())
+CORS_EXPOSE_HEADERS = ["Retry-After"]
+
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
