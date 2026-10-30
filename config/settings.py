@@ -152,6 +152,7 @@ REST_FRAMEWORK = {
         "member_invite": "20/hour",
     },
     "NUM_PROXIES": config("NUM_PROXIES", default=0, cast=int),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 
