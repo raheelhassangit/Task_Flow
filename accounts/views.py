@@ -12,7 +12,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 from .models import User
 from .serializers import (
     ChangePasswordSerializer,
@@ -23,6 +24,7 @@ from .serializers import (
 )
 from .tokens import revoke_all_refresh_tokens
 
+DETAIL = inline_serializer(name="Detail", fields={"detail": serializers.CharField()})
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -33,6 +35,12 @@ class RegisterView(generics.CreateAPIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=inline_serializer(
+            name="LogoutRequest", fields={"refresh": serializers.CharField()}
+        ),
+        responses={204: None},
+    )
     def post(self, request):
         refresh = request.data.get("refresh")
         if not refresh:
@@ -59,6 +67,8 @@ class MeView(generics.RetrieveUpdateAPIView):
 
 class ChangePasswordView(APIView):
     throttle_scope = "change_password"
+    
+    @extend_schema(request=ChangePasswordSerializer, responses=DETAIL)
     def post(self, request):
         serializer = ChangePasswordSerializer(
             data=request.data, context={"request": request}
@@ -76,6 +86,7 @@ class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
     throttle_scope = "password_reset"
     
+    @extend_schema(request=PasswordResetRequestSerializer, responses=DETAIL)
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -100,6 +111,7 @@ class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
     throttle_scope = "password_reset_confirm"
 
+    @extend_schema(request=PasswordResetConfirmSerializer, responses=DETAIL)
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
