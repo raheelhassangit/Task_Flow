@@ -28,6 +28,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Project.objects.none()
         return Project.objects.filter(memberships__user=self.request.user)
     
     def get_throttles(self):
