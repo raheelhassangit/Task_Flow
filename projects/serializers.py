@@ -4,10 +4,18 @@ from .models import Project
 from .models import Project, ProjectMember
 
 class ProjectSerializer(serializers.ModelSerializer):
+    my_role = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
-        fields = ["id", "name", "description", "created_at", "updated_at"]
+        fields = ["id", "name", "description", "my_role", "created_at", "updated_at"]
         read_only_fields = ["id", "created_at", "updated_at"]
+    
+    def get_my_role(self, obj) -> str | None:
+        from .permissions import get_role
+
+        request = self.context.get("request")
+        return get_role(request.user, obj) if request else None    
         
 
 class MemberSerializer(serializers.ModelSerializer):
