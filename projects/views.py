@@ -18,7 +18,7 @@ from .serializers import (
     RoleSerializer,
 )
 
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
 from django.utils import timezone
 from tasks.models import Task
 from tasks.stats import OPEN_STATUSES, task_stats
