@@ -1,7 +1,9 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute'
-import Home from './pages/Home'
+import Layout from './components/Layout'
 import Login from './pages/Login'
+import ProjectDetail from './pages/ProjectDetail'
+import Projects from './pages/Projects'
 import Register from './pages/Register'
 
 export default function App() {
@@ -10,7 +12,11 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Home />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<Navigate to="/projects" replace />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
+        </Route>
       </Route>
     </Routes>
   )
