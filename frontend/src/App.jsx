@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import ProjectDetail from './pages/ProjectDetail'
 import Projects from './pages/Projects'
 import Register from './pages/Register'
+import TaskDetail from './pages/TaskDetail'
 
 export default function App() {
   return (
