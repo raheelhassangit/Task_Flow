@@ -28,6 +28,7 @@ export default function ProjectDetail() {
     mutationFn: () => api.delete(`projects/${id}/`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['projects'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
       navigate('/projects', { replace: true })
     },
   })
