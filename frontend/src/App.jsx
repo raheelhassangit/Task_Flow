@@ -6,6 +6,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import Projects from './pages/Projects'
 import Register from './pages/Register'
 import TaskDetail from './pages/TaskDetail'
+import Dashboard from './pages/Dashboard'
 
 export default function App() {
   return (
@@ -19,6 +20,9 @@ export default function App() {
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/tasks/:id" element={<TaskDetail />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/projects" element={<Projects />} />
         </Route>
       </Route>
     </Routes>

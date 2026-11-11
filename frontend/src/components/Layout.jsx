@@ -14,14 +14,17 @@ export default function Layout() {
     <div className="min-h-screen bg-slate-50">
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-5xl items-center gap-4 px-4 py-3">
-          <Link to="/projects" className="text-lg font-semibold text-indigo-600">
-            TaskFlow
-          </Link>
-          <nav className="flex gap-1">
-            <NavLink to="/projects" className={linkClass}>
-              Projects
-            </NavLink>
-          </nav>
+          <Link to="/dashboard" className="text-lg font-semibold text-indigo-600">
+              TaskFlow
+            </Link>
+            <nav className="flex gap-1">
+              <NavLink to="/dashboard" className={linkClass}>
+                Dashboard
+              </NavLink>
+              <NavLink to="/projects" className={linkClass}>
+                Projects
+              </NavLink>
+            </nav>
           <div className="ml-auto flex items-center gap-3">
             <NotificationBell />
             <span className="hidden text-sm text-slate-600 sm:inline">

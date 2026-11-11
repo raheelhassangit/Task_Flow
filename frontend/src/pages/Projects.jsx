@@ -25,6 +25,7 @@ export default function Projects() {
     mutationFn: (payload) => api.post('projects/', payload).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['projects'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
       setForm({ name: '', description: '' })
       setShowForm(false)
       setPage(1)
