@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, booting, login, register, logout }}>
+    <AuthContext.Provider value={{ user, booting, login, register, logout, updateUser: setUser }}>
       {children}
     </AuthContext.Provider>
   )
