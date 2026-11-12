@@ -38,6 +38,9 @@ export default function Login() {
         )}
         <Field label="Email" type="email" value={form.email} onChange={set('email')} error={error.fields.email} required />
         <Field label="Password" type="password" value={form.password} onChange={set('password')} error={error.fields.password} required />
+        <div className="text-right">
+          <Link to="/forgot-password" className="text-xs text-indigo-600">Forgot password?</Link>
+        </div>
         <button
           disabled={busy}
           className="w-full rounded-md bg-indigo-600 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"

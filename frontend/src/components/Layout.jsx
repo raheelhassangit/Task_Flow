@@ -27,9 +27,9 @@ export default function Layout() {
             </nav>
           <div className="ml-auto flex items-center gap-3">
             <NotificationBell />
-            <span className="hidden text-sm text-slate-600 sm:inline">
+            <Link to="/profile" className="hidden text-sm text-slate-600 hover:text-slate-900 sm:inline">
               {user.first_name || user.email}
-            </span>
+            </Link>
             <button onClick={logout} className="text-sm text-slate-500 hover:text-slate-900">
               Log out
             </button>
