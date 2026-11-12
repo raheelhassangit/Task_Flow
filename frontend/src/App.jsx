@@ -7,6 +7,9 @@ import Projects from './pages/Projects'
 import Register from './pages/Register'
 import TaskDetail from './pages/TaskDetail'
 import Dashboard from './pages/Dashboard'
+import ForgotPassword from './pages/ForgotPassword'
+import Profile from './pages/Profile'
+import ResetPassword from './pages/ResetPassword'
 
 export default function App() {
   return (
@@ -23,6 +26,8 @@ export default function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
       </Route>
     </Routes>
