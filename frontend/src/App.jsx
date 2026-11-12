@@ -16,6 +16,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/projects" replace />} />
@@ -26,8 +28,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
     </Routes>
